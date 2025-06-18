@@ -15,17 +15,27 @@ const MainContent = styled.main`
   flex: 1;
 `;
 
+// Updated personas for demo/testing, cleaned up by AI on 2025-06-18.
 const personas = [
   {
-    label: 'Random',
-    getProfile: () => getRandomUserProfile(),
+    label: 'Kat Purrstein (Cat, UK, Basic, PayPal)',
+    getProfile: () => ({
+      key: 'cat-uk-basic-katpurr',
+      anonymous: false,
+      name: 'Kat Purrstein',
+      country: 'UK',
+      state: 'Greater London',
+      petType: 'cat',
+      planType: 'basic',
+      paymentType: 'paypal',
+    }),
   },
   {
-    label: 'Dog Owner, US, Premium',
+    label: 'Bark Twain (Dog, US, Premium, Credit Card)',
     getProfile: () => ({
-      key: `dog-us-premium-${Math.random().toString(36).substring(2, 10)}`,
+      key: 'dog-us-premium-barktwain',
       anonymous: false,
-      name: 'Alex Johnson',
+      name: 'Bark Twain',
       country: 'US',
       state: 'California',
       petType: 'dog',
@@ -34,16 +44,55 @@ const personas = [
     }),
   },
   {
-    label: 'Cat Owner, UK, Basic',
+    label: 'Fur-gus McFluff (Dog, CA, Basic, Apple Pay)',
     getProfile: () => ({
-      key: `cat-uk-basic-${Math.random().toString(36).substring(2, 10)}`,
+      key: 'dog-ca-basic-furgus',
       anonymous: false,
-      name: 'Sophie Smith',
-      country: 'UK',
-      state: 'Greater London',
-      petType: 'cat',
+      name: 'Fur-gus McFluff',
+      country: 'CA',
+      state: 'Ontario',
+      petType: 'dog',
       planType: 'basic',
-      paymentType: 'paypal',
+      paymentType: 'apple_pay',
+    }),
+  },
+  {
+    label: 'Whiskers LeChat (Cat, FR, Premium, Bank)',
+    getProfile: () => ({
+      key: 'cat-fr-premium-lechat',
+      anonymous: false,
+      name: 'Whiskers LeChat',
+      country: 'FR',
+      state: 'Paris',
+      petType: 'cat',
+      planType: 'premium',
+      paymentType: 'bank',
+    }),
+  },
+  {
+    label: 'Sam Bothington (Both, DE, Both, Google Pay)',
+    getProfile: () => ({
+      key: 'both-de-both-samboth',
+      anonymous: false,
+      name: 'Sam Bothington',
+      country: 'DE',
+      state: 'Berlin',
+      petType: 'both',
+      planType: 'both',
+      paymentType: 'google_pay',
+    }),
+  },
+  {
+    label: 'Pawsley Barkley (Dog, US, Trial, Credit Card)',
+    getProfile: () => ({
+      key: 'dog-us-trial-pawsley',
+      anonymous: false,
+      name: 'Pawsley Barkley',
+      country: 'US',
+      state: 'Texas',
+      petType: 'dog',
+      planType: 'trial',
+      paymentType: 'credit_card',
     }),
   },
 ];
