@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 import { faker } from '@faker-js/faker';
 
@@ -16,13 +16,15 @@ export type UserProfile = {
 interface UserContextType {
   user: UserProfile;
   isLoggedIn: boolean;
-  login: () => void;
+  login: (profile: UserProfile) => void;
   logout: () => void;
+  setUser: (profile: UserProfile) => void;
+  previousAnonymousKey?: string;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
-const getRandomUserProfile = (): UserProfile => {
+export const getRandomUserProfile = (): UserProfile => {
   const country = faker.helpers.arrayElement(['US', 'CA', 'FR', 'UK']);
   const petType = faker.helpers.arrayElement(['dog', 'cat', 'bird', 'reptile']);
   const planType = faker.helpers.arrayElement(['basic', 'premium', 'deluxe']);
@@ -33,7 +35,7 @@ const getRandomUserProfile = (): UserProfile => {
   else if (country === 'FR') state = faker.helpers.arrayElement(['Paris', 'Bouches-du-Rhône', 'Nord', 'Rhône', 'Haute-Garonne']);
   else if (country === 'UK') state = faker.helpers.arrayElement(['Greater London', 'West Midlands', 'Greater Manchester', 'West Yorkshire', 'Kent']);
   return {
-    key: faker.internet.userName() + '-' + faker.string.uuid(),
+    key: faker.internet.username() + '-' + faker.string.uuid(),
     anonymous: false,
     name: faker.person.fullName(),
     country,
@@ -51,13 +53,29 @@ const getAnonymousProfile = (): UserProfile => ({
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile>(getAnonymousProfile());
+  const [previousAnonymousKey, setPreviousAnonymousKey] = useState<string | undefined>();
   const isLoggedIn = !user.anonymous;
 
-  const login = () => setUser(getRandomUserProfile());
-  const logout = () => setUser(getAnonymousProfile());
+  const login = (profile: UserProfile) => {
+    // Store the current anonymous key before setting the new user
+    setPreviousAnonymousKey(user.key);
+    setUser(profile);
+  };
+
+  const logout = () => {
+    setUser(getAnonymousProfile());
+    setPreviousAnonymousKey(undefined);
+  };
 
   return (
-    <UserContext.Provider value={{ user, isLoggedIn, login, logout }}>
+    <UserContext.Provider value={{ 
+      user, 
+      isLoggedIn, 
+      login, 
+      logout, 
+      setUser,
+      previousAnonymousKey 
+    }}>
       {children}
     </UserContext.Provider>
   );

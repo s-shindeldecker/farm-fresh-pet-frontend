@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag';
 import styled from '@emotion/styled';
 
@@ -138,8 +138,8 @@ const DEFAULT_BANNER = {
 };
 
 export const HeroSection = () => {
-  const { value: showTrialButton, isLoading: isButtonLoading } = useFeatureFlag('showTrialButton', false);
-  const { value: bannerConfig = DEFAULT_BANNER } = useFeatureFlag('heroBannerText', DEFAULT_BANNER);
+  const { value: showTrialButton, isLoading: isButtonLoading } = useFeatureFlag('show-trial-button', false);
+  const { value: bannerConfig = DEFAULT_BANNER } = useFeatureFlag('hero-banner-text', DEFAULT_BANNER);
   const [showModal, setShowModal] = useState(false);
 
   const imageFile = bannerConfig['image-file'] || DEFAULT_BANNER['image-file'];
@@ -152,6 +152,26 @@ export const HeroSection = () => {
   const subBannerTextColor = bannerConfig['sub-banner-text-color'] || DEFAULT_BANNER['sub-banner-text-color'];
   const horiz = bannerConfig['horiz-justification'] || DEFAULT_BANNER['horiz-justification'];
   const vert = bannerConfig['vert-justification'] || DEFAULT_BANNER['vert-justification'];
+
+  useEffect(() => {
+    console.log('[LD] Hero Section Render:', {
+      timestamp: new Date().toISOString(),
+      showTrialButton,
+      bannerConfig,
+      isButtonLoading,
+      defaultBannerConfig: DEFAULT_BANNER,
+      isFlagValid,
+      computedValues: {
+        bannerText,
+        bannerTextColor,
+        subBannerText,
+        subBannerTextColor,
+        horiz,
+        vert,
+        imageFile
+      }
+    });
+  }, [showTrialButton, bannerConfig, isButtonLoading, isFlagValid, bannerText, bannerTextColor, subBannerText, subBannerTextColor, horiz, vert, imageFile]);
 
   return (
     <HeroContainer>

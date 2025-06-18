@@ -1,6 +1,9 @@
+// Cleaned up by AI on 2025-06-18, see git history for previous versions.
 import { LDProvider } from 'launchdarkly-react-client-sdk';
 import type { ReactNode } from 'react';
 import { useUser } from './UserContext';
+import { useMemo } from 'react';
+import LDContextSync from './LDContextSync';
 
 interface LDContextProps {
   children: ReactNode;
@@ -8,21 +11,55 @@ interface LDContextProps {
 
 export const LDContextProvider = ({ children }: LDContextProps) => {
   const clientSideID = import.meta.env.VITE_LAUNCHDARKLY_CLIENT_ID;
-  const { user } = useUser();
+  const { user, previousAnonymousKey } = useUser();
+
+  // Memoize context so it only changes when user or previousAnonymousKey changes
+  const context = useMemo(() => {
+    if (previousAnonymousKey && !user.anonymous) {
+      return {
+        kind: 'multi',
+        user: {
+          key: user.key,
+          name: user.name,
+          country: user.country,
+          state: user.state,
+          petType: user.petType?.toLowerCase(),
+          planType: user.planType,
+          paymentType: user.paymentType,
+          anonymous: false
+        },
+        anonymous: {
+          key: previousAnonymousKey,
+          anonymous: true
+        }
+      };
+    }
+    return {
+      kind: 'user',
+      key: user.key,
+      anonymous: user.anonymous,
+      name: user.name,
+      country: user.country,
+      state: user.state,
+      petType: user.petType?.toLowerCase(),
+      planType: user.planType,
+      paymentType: user.paymentType
+    };
+  }, [user, previousAnonymousKey]);
 
   return (
     <LDProvider
       clientSideID={clientSideID}
-      context={{
-        kind: 'user',
-        ...user,
-      }}
+      context={context as any}
       options={{
         bootstrap: 'localStorage',
         streaming: true,
+        evaluationReasons: true
       }}
     >
-      {children}
+      <LDContextSync context={context}>
+        {children}
+      </LDContextSync>
     </LDProvider>
   );
 }; 

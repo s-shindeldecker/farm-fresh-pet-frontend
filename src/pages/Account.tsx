@@ -1,6 +1,5 @@
-import React from 'react';
-import { useUser } from '../context/UserContext';
 import styled from '@emotion/styled';
+import { useUser } from '../context/UserContext';
 
 const Card = styled.div`
   max-width: 400px;
