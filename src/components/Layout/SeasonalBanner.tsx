@@ -1,0 +1,38 @@
+import { useFeatureFlag } from '../../hooks/useFeatureFlag';
+import styled from '@emotion/styled';
+
+const BannerContainer = styled.div`
+  width: 100%;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+  color: white;
+  text-align: center;
+  padding: 0.75em 1em;
+  font-weight: 600;
+  font-size: 0.95em;
+  position: relative;
+  z-index: 101;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+`;
+
+const BannerText = styled.span`
+  display: inline-block;
+  max-width: 1200px;
+  margin: 0 auto;
+`;
+
+export const SeasonalBanner = () => {
+  const { value: bannerText, isLoading } = useFeatureFlag('seasonal-sale-banner-text', '');
+
+  // Don't render anything if there's no banner text or if still loading
+  if (isLoading || !bannerText || bannerText.trim() === '') {
+    return null;
+  }
+
+  return (
+    <BannerContainer>
+      <BannerText>
+        {bannerText}
+      </BannerText>
+    </BannerContainer>
+  );
+}; 

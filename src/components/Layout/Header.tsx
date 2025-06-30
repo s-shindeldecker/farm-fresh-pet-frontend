@@ -58,6 +58,7 @@ export const Header = ({ isLoggedIn, onLogin, onLogout, onAccount }: HeaderProps
         <NavLink><a href="#">Why Fresh?</a></NavLink>
         <NavLink><a href="#">FAQ</a></NavLink>
         <NavLink><a href="#">For Vet Professionals</a></NavLink>
+        <NavLink><Link to="/developer-tools">Developer Tools</Link></NavLink>
         {isLoggedIn && (
           <NavLink><a href="#" onClick={onAccount}>Account</a></NavLink>
         )}

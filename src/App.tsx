@@ -5,7 +5,9 @@ import type { UserProfile } from './context/UserContext';
 import { HeroSection } from './components/Hero/HeroSection';
 import { Header } from './components/Layout/Header';
 import { Footer } from './components/Layout/Footer';
+import { SeasonalBanner } from './components/Layout/SeasonalBanner';
 import { Account } from './pages/Account';
+import { DeveloperTools } from './pages/DeveloperTools';
 import styled from '@emotion/styled';
 import { useState } from 'react';
 import { Modal } from './components/common/Modal';
@@ -136,6 +138,7 @@ function AppContent() {
 
   return (
     <LDContextProvider>
+      <SeasonalBanner />
       <Header
         isLoggedIn={isLoggedIn}
         onLogin={() => setShowPersonaModal(true)}
@@ -146,6 +149,7 @@ function AppContent() {
         <Routes>
           <Route path="/" element={<HeroSection />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/developer-tools" element={<DeveloperTools />} />
         </Routes>
       </MainContent>
       <Footer />

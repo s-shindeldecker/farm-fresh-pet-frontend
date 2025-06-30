@@ -38,12 +38,14 @@ src/
 │   │   └── HeroVariants.tsx
 │   ├── Layout/
 │   │   ├── Header.tsx
-│   │   └── Footer.tsx
+│   │   ├── Footer.tsx
+│   │   └── SeasonalBanner.tsx
 │   └── common/
 │       ├── Button.tsx
 │       └── Card.tsx
 ├── hooks/
-│   └── useFeatureFlag.ts
+│   ├── useFeatureFlag.ts
+│   └── useTrialDays.ts
 ├── context/
 │   └── LDContext.tsx
 ├── pages/
@@ -54,6 +56,14 @@ src/
 ```
 
 ## Feature Flags
+
+### Seasonal Sale Banner
+- **Flag key:** `seasonal-sale-banner-text` (use camelCase `seasonalSaleBannerText` in React code)
+- **Type:** String
+- **Default value:** `''` (empty string - banner hidden when empty)
+- Controls the text displayed in a promotional banner above the main navigation header.
+- The banner only appears when the flag has a non-empty value.
+- Perfect for seasonal promotions, sales announcements, or special offers.
 
 ### Hero Banner (Image, Text, and Style)
 
@@ -67,7 +77,7 @@ The application uses a single LaunchDarkly JSON flag to control the hero banner 
 {
   "banner-text": "Fresh, healthy meals delivered for your dog",
   "banner-text-color": "#FFFFFF",
-  "sub-banner-text": "Start your pup's journey to better health with our 7-day free trial",
+  "sub-banner-text": "Start your pup's journey to better health with our free trial",
   "sub-banner-text-color": "#FFFFFF",
   "horiz-justification": "center",
   "vert-justification": "top",
@@ -88,10 +98,18 @@ The application uses a single LaunchDarkly JSON flag to control the hero banner 
 2. Add a new variation in LaunchDarkly with the desired JSON structure and image filename.
 3. Assign users/contexts to the new variation as needed.
 
+### Trial Days
+- **Flag key:** `number-of-days-trial` (use camelCase `numberOfDaysTrial` in React code)
+- **Type:** Number
+- **Default value:** 7
+- Controls the number of days offered in the free trial throughout the application.
+- Used in: Hero section button text, modal content, and any other trial-related messaging.
+
 ### Trial Button
 - **Flag key:** `show-trial-button` (use camelCase `showTrialButton` in React code)
 - **Type:** Boolean
-- Controls the visibility of the "Try 7 Days Free" button in the hero section.
+- Controls the visibility of the trial button in the hero section.
+- The button text dynamically shows the trial days from the `number-of-days-trial` flag.
 
 ## Fallback/Default Image Logic
 - If the `image-file` property is missing, the app will use a default image (`hero-control.jpeg`).
@@ -105,6 +123,11 @@ To add new feature flags:
 2. Use the `useFeatureFlag` hook in your component:
 ```typescript
 const { value, isLoading } = useFeatureFlag('yourFlagKey', defaultValue);
+```
+
+For trial days specifically, use the `useTrialDays` hook:
+```typescript
+const { trialDays, isLoading } = useTrialDays(7);
 ```
 
 ## Building for Production
@@ -123,5 +146,7 @@ The build output will be in the `dist` directory.
 4. The React app will automatically use `/images/{flagValue}` as the hero image.
 
 ## Trial Button and Modal
-- The visibility of the "Try 7 Days Free" button is controlled by the `show-trial-button` flag in LaunchDarkly.
+- The visibility of the trial button is controlled by the `show-trial-button` flag in LaunchDarkly.
+- The number of days shown in the button text and modal is controlled by the `number-of-days-trial` flag.
 - When enabled, the button appears in the hero section and opens a modal for trial signup.
+- Perfect for A/B testing different trial durations to optimize conversion rates.

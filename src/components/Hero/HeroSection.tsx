@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFeatureFlag } from '../../hooks/useFeatureFlag';
+import { useTrialDays } from '../../hooks/useTrialDays';
 import styled from '@emotion/styled';
 
 const HeroContainer = styled.div`
@@ -130,7 +131,7 @@ const ModalContent = styled.div`
 const DEFAULT_BANNER = {
   'banner-text': 'Fresh, healthy meals delivered for your dog',
   'banner-text-color': '#FFFFFF',
-  'sub-banner-text': "Start your pup's journey to better health with our 7-day free trial",
+  'sub-banner-text': "Start your pup's journey to better health with our free trial",
   'sub-banner-text-color': '#FFFFFF',
   'horiz-justification': 'center',
   'vert-justification': 'top',
@@ -140,6 +141,7 @@ const DEFAULT_BANNER = {
 export const HeroSection = () => {
   const { value: showTrialButton, isLoading: isButtonLoading } = useFeatureFlag('show-trial-button', false);
   const { value: bannerConfig = DEFAULT_BANNER } = useFeatureFlag('hero-banner-text', DEFAULT_BANNER);
+  const { trialDays, isLoading: isTrialDaysLoading } = useTrialDays(7);
   const [showModal, setShowModal] = useState(false);
 
   const imageFile = bannerConfig['image-file'] || DEFAULT_BANNER['image-file'];
@@ -153,12 +155,18 @@ export const HeroSection = () => {
   const horiz = bannerConfig['horiz-justification'] || DEFAULT_BANNER['horiz-justification'];
   const vert = bannerConfig['vert-justification'] || DEFAULT_BANNER['vert-justification'];
 
+  // Create dynamic trial text
+  const trialButtonText = `Try ${trialDays} Days Free`;
+  const trialModalText = `Get ${trialDays} days of fresh, customized meals for your dog.`;
+
   useEffect(() => {
     console.log('[LD] Hero Section Render:', {
       timestamp: new Date().toISOString(),
       showTrialButton,
       bannerConfig,
       isButtonLoading,
+      trialDays,
+      isTrialDaysLoading,
       defaultBannerConfig: DEFAULT_BANNER,
       isFlagValid,
       computedValues: {
@@ -168,10 +176,12 @@ export const HeroSection = () => {
         subBannerTextColor,
         horiz,
         vert,
-        imageFile
+        imageFile,
+        trialButtonText,
+        trialModalText
       }
     });
-  }, [showTrialButton, bannerConfig, isButtonLoading, isFlagValid, bannerText, bannerTextColor, subBannerText, subBannerTextColor, horiz, vert, imageFile]);
+  }, [showTrialButton, bannerConfig, isButtonLoading, trialDays, isTrialDaysLoading, isFlagValid, bannerText, bannerTextColor, subBannerText, subBannerTextColor, horiz, vert, imageFile, trialButtonText, trialModalText]);
 
   return (
     <HeroContainer>
@@ -188,10 +198,10 @@ export const HeroSection = () => {
           <SubBannerText color={subBannerTextColor}>{subBannerText}</SubBannerText>
         </HeroTextOverlay>
       </HeroText>
-      {(!isButtonLoading && showTrialButton) && (
+      {(!isButtonLoading && !isTrialDaysLoading && showTrialButton) && (
         <HeroButtonWrapper>
           <TrialButton onClick={() => setShowModal(true)}>
-            Try 7 Days Free
+            {trialButtonText}
           </TrialButton>
         </HeroButtonWrapper>
       )}
@@ -199,7 +209,7 @@ export const HeroSection = () => {
         <ModalOverlay onClick={() => setShowModal(false)}>
           <ModalContent onClick={e => e.stopPropagation()}>
             <h2>Start Your Free Trial Today!</h2>
-            <p>Get 7 days of fresh, customized meals for your dog.</p>
+            <p>{trialModalText}</p>
             <form className="trial-form" onSubmit={e => {e.preventDefault(); setShowModal(false); alert('Thank you for your interest! This is a demo site.');}}>
               <input type="email" placeholder="Enter your email" required style={{width: '100%', padding: '0.5em', marginBottom: '1em'}} />
               <button type="submit" className="cta-button" style={{width: '100%'}}>Get Started</button>
