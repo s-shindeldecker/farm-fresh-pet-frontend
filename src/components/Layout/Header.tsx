@@ -4,14 +4,25 @@ import logo from '/gravity-farms-logo.png';
 
 const NavBar = styled.nav`
   width: 100%;
+  background: transparent;
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+`;
+
+const CenteredHeader = styled.div`
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
   background: #F6E7CB;
   border-bottom: 1px solid #eee;
   display: flex;
   align-items: center;
   padding: 0.5em 2em;
-  position: sticky;
-  top: 0;
-  z-index: 100;
 `;
 
 const Logo = styled.div`
@@ -63,31 +74,35 @@ interface HeaderProps {
 export const Header = ({ isLoggedIn, onLogin, onLogout, onAccount }: HeaderProps) => {
   return (
     <NavBar>
-      <Logo>
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <LogoImg src={logo} alt="Gravity Farms Petfood logo" />
-          <LogoText>Gravity Farms Petfood</LogoText>
-        </Link>
-      </Logo>
-      <NavLinks>
-        <NavLink><Link to="/">Home</Link></NavLink>
-        <NavLink><a href="#">Reviews</a></NavLink>
-        <NavLink><a href="#">About Us</a></NavLink>
-        <NavLink><a href="#">Why Fresh?</a></NavLink>
-        <NavLink><a href="#">FAQ</a></NavLink>
-        <NavLink><a href="#">For Vet Professionals</a></NavLink>
-        <NavLink><Link to="/developer-tools">Developer Tools</Link></NavLink>
-        {isLoggedIn && (
-          <NavLink><a href="#" onClick={onAccount}>Account</a></NavLink>
-        )}
-        <NavLink>
-          {isLoggedIn ? (
-            <a href="#" onClick={onLogout}>Log Out</a>
-          ) : (
-            <a href="#" onClick={onLogin}>Log In</a>
-          )}
-        </NavLink>
-      </NavLinks>
+      <CenteredHeader>
+        <div className="centered-container">
+          <Logo>
+            <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+              <LogoImg src={logo} alt="Gravity Farms Petfood logo" />
+              <LogoText>Gravity Farms Petfood</LogoText>
+            </Link>
+          </Logo>
+          <NavLinks>
+            <NavLink><Link to="/">Home</Link></NavLink>
+            <NavLink><a href="#">Reviews</a></NavLink>
+            <NavLink><a href="#">About Us</a></NavLink>
+            <NavLink><a href="#">Why Fresh?</a></NavLink>
+            <NavLink><a href="#">FAQ</a></NavLink>
+            <NavLink><a href="#">For Vet Professionals</a></NavLink>
+            <NavLink><Link to="/developer-tools">Developer Tools</Link></NavLink>
+            {isLoggedIn && (
+              <NavLink><a href="#" onClick={onAccount}>Account</a></NavLink>
+            )}
+            <NavLink>
+              {isLoggedIn ? (
+                <a href="#" onClick={onLogout}>Log Out</a>
+              ) : (
+                <a href="#" onClick={onLogin}>Log In</a>
+              )}
+            </NavLink>
+          </NavLinks>
+        </div>
+      </CenteredHeader>
     </NavBar>
   );
 }; 

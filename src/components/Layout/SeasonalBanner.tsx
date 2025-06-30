@@ -30,9 +30,11 @@ export const SeasonalBanner = () => {
 
   return (
     <BannerContainer>
-      <BannerText>
-        {bannerText}
-      </BannerText>
+      <div className="centered-container">
+        <BannerText>
+          {bannerText}
+        </BannerText>
+      </div>
     </BannerContainer>
   );
 }; 
