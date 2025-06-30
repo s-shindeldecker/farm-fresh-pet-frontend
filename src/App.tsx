@@ -11,7 +11,6 @@ import { DeveloperTools } from './pages/DeveloperTools';
 import styled from '@emotion/styled';
 import { useState } from 'react';
 import { Modal } from './components/common/Modal';
-import { getRandomUserProfile } from './context/UserContext';
 
 const MainContent = styled.main`
   flex: 1;

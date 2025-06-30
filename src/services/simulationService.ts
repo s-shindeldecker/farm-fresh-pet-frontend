@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import { useLDClient } from 'launchdarkly-react-client-sdk';
 import type { UserProfile } from '../context/UserContext';
 import config from '../config/simulation.json';
 
@@ -37,14 +36,12 @@ const defaultConfig: SimulationConfig = config as SimulationConfig;
 
 export class SimulationService {
   private config: SimulationConfig;
-  private ldClient: any;
   private isRunning: boolean = false;
   private intervalId: NodeJS.Timeout | null = null;
   private onProgress?: (progress: SimulationProgress) => void;
   private onComplete?: (results: SimulationResults) => void;
 
-  constructor(ldClient: any, configOverride?: Partial<SimulationConfig>) {
-    this.ldClient = ldClient;
+  constructor(configOverride?: Partial<SimulationConfig>) {
     this.config = { ...defaultConfig, ...configOverride };
   }
 

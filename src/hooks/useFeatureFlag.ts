@@ -60,8 +60,6 @@ export const useFeatureFlag = (flagKey: string, defaultValue: any = false) => {
   // Evaluate on mount, when ldClient, flagKey, or contextVersion changes
   useEffect(() => {
     if (ldClient) {
-      const isContextChange = lastContextVersionRef.current !== null && lastContextVersionRef.current !== contextVersion;
-      const isInitialMount = lastContextVersionRef.current === null;
       lastContextVersionRef.current = contextVersion;
       evaluateFlag();
     }
