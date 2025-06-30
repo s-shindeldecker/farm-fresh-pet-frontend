@@ -3,7 +3,7 @@ import styled from '@emotion/styled';
 
 const BannerContainer = styled.div`
   width: 100%;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+  background: linear-gradient(135deg, #FFD166 0%, #6A994E 100%);
   color: white;
   text-align: center;
   padding: 0.75em 1em;

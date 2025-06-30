@@ -1,6 +1,6 @@
-# Pet Food Subscription Frontend
+# Gravity Farms Petfood Frontend
 
-This is the frontend application for the Pet Food Subscription service, built with React and LaunchDarkly for feature flagging.
+This is the frontend application for Gravity Farms Petfood, a premium pet food subscription service crafted in Gravity Falls, Oregon, built with React and LaunchDarkly for feature flagging.
 
 ## Setup
 

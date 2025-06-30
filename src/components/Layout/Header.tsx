@@ -1,9 +1,10 @@
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
+import logo from '/gravity-farms-logo.png';
 
 const NavBar = styled.nav`
   width: 100%;
-  background: #fff;
+  background: #F6E7CB;
   border-bottom: 1px solid #eee;
   display: flex;
   align-items: center;
@@ -18,6 +19,18 @@ const Logo = styled.div`
   font-size: 1.5em;
   color: #4caf50;
   margin-right: 2em;
+`;
+
+const LogoImg = styled.img`
+  height: 100px;
+  margin-right: 0.5em;
+  vertical-align: middle;
+`;
+
+const LogoText = styled.span`
+  font-weight: bold;
+  font-size: 1.5em;
+  color: #35524A;
 `;
 
 const NavLinks = styled.ul`
@@ -50,7 +63,12 @@ interface HeaderProps {
 export const Header = ({ isLoggedIn, onLogin, onLogout, onAccount }: HeaderProps) => {
   return (
     <NavBar>
-      <Logo><Link to="/" style={{ color: '#4caf50', textDecoration: 'none' }}>Farm Fresh Pet</Link></Logo>
+      <Logo>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <LogoImg src={logo} alt="Gravity Farms Petfood logo" />
+          <LogoText>Gravity Farms Petfood</LogoText>
+        </Link>
+      </Logo>
       <NavLinks>
         <NavLink><Link to="/">Home</Link></NavLink>
         <NavLink><a href="#">Reviews</a></NavLink>

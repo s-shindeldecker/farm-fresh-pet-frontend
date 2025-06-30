@@ -95,14 +95,16 @@ const FallbackBanner = styled.div`
 const TrialButton = styled.button`
   padding: 1em 2em;
   font-size: 1.2em;
-  background: #4caf50;
-  color: white;
+  background: #FFD166;
+  color: #35524A;
   border: none;
   border-radius: 8px;
+  font-weight: bold;
   cursor: pointer;
   transition: background 0.2s;
   &:hover {
-    background: #388e3c;
+    background: #D7263D;
+    color: #fff;
   }
 `;
 
@@ -129,7 +131,7 @@ const ModalContent = styled.div`
 `;
 
 const DEFAULT_BANNER = {
-  'banner-text': 'Fresh, healthy meals delivered for your dog',
+  'banner-text': 'Fresh, healthy meals crafted in Gravity Falls',
   'banner-text-color': '#FFFFFF',
   'sub-banner-text': "Start your pup's journey to better health with our free trial",
   'sub-banner-text-color': '#FFFFFF',

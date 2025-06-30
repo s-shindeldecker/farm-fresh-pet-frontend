@@ -1,8 +1,9 @@
 import styled from '@emotion/styled';
+import { useFeatureFlag } from '../../hooks/useFeatureFlag';
 
 const FooterBar = styled.footer`
   width: 100%;
-  background: #f8f8f8;
+  background: #F6E7CB;
   border-top: 1px solid #eee;
   padding: 2em 0 1em 0;
   display: flex;
@@ -38,22 +39,31 @@ const Copyright = styled.div`
   color: #aaa;
 `;
 
-export const Footer = () => (
-  <FooterBar>
-    <FooterLinks>
-      <FooterLink><a href="#">Reviews</a></FooterLink>
-      <FooterLink><a href="#">About Us</a></FooterLink>
-      <FooterLink><a href="#">FAQ</a></FooterLink>
-      <FooterLink><a href="#">Careers</a></FooterLink>
-      <FooterLink><a href="#">Affiliates</a></FooterLink>
-      <FooterLink><a href="#">For Vet Professionals</a></FooterLink>
-      <FooterLink><a href="#">Privacy</a></FooterLink>
-      <FooterLink><a href="#">Terms</a></FooterLink>
-      <FooterLink><a href="#">Accessibility</a></FooterLink>
-      <FooterLink><a href="#">Do Not Sell My Personal Information</a></FooterLink>
-    </FooterLinks>
-    <Copyright>
-      © {new Date().getFullYear()} Farm Fresh Pet. All rights reserved.
-    </Copyright>
-  </FooterBar>
-); 
+export const Footer = () => {
+  const { value: tagline = "Crafted in Gravity Falls, delivered to your door", isLoading } = useFeatureFlag('site-tagline', "Crafted in Gravity Falls, delivered to your door");
+
+  return (
+    <FooterBar>
+      <FooterLinks>
+        <FooterLink><a href="#">Reviews</a></FooterLink>
+        <FooterLink><a href="#">About Us</a></FooterLink>
+        <FooterLink><a href="#">FAQ</a></FooterLink>
+        <FooterLink><a href="#">Careers</a></FooterLink>
+        <FooterLink><a href="#">Affiliates</a></FooterLink>
+        <FooterLink><a href="#">For Vet Professionals</a></FooterLink>
+        <FooterLink><a href="#">Privacy</a></FooterLink>
+        <FooterLink><a href="#">Terms</a></FooterLink>
+        <FooterLink><a href="#">Accessibility</a></FooterLink>
+        <FooterLink><a href="#">Do Not Sell My Personal Information</a></FooterLink>
+      </FooterLinks>
+      <Copyright>
+        © {new Date().getFullYear()} Gravity Farms Petfood. All rights reserved.
+      </Copyright>
+      {!isLoading && (
+        <div style={{ fontSize: '0.85em', color: '#35524A', marginTop: '0.5em', fontWeight: 500 }}>
+          {tagline}
+        </div>
+      )}
+    </FooterBar>
+  );
+}; 
