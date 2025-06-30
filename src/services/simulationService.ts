@@ -36,12 +36,14 @@ const defaultConfig: SimulationConfig = config as SimulationConfig;
 
 export class SimulationService {
   private config: SimulationConfig;
+  private ldClient: any;
   private isRunning: boolean = false;
   private intervalId: NodeJS.Timeout | null = null;
   private onProgress?: (progress: SimulationProgress) => void;
   private onComplete?: (results: SimulationResults) => void;
 
-  constructor(configOverride?: Partial<SimulationConfig>) {
+  constructor(ldClient: any, configOverride?: Partial<SimulationConfig>) {
+    this.ldClient = ldClient;
     this.config = { ...defaultConfig, ...configOverride };
   }
 
