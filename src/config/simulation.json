@@ -1,6 +1,6 @@
 {
-  "duration": 120,
-  "recordsPerSecond": 10,
+  "duration": 600,
+  "recordsPerSecond": 1,
   "experiments": {
     "trial_duration": {
       "flag": "number-of-days-trial",
