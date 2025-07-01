@@ -84,6 +84,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error('[API] Insert error:', err);
     res.status(500).json({ error: 'Failed to insert event', details: err });
   } finally {
-    connection.destroy();
+    connection.destroy(() => {});
   }
 } 
