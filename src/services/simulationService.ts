@@ -118,21 +118,38 @@ export class SimulationService {
   private async simulateUserJourney(userContext: UserProfile) {
     // Evaluate all flags
     const flagValues = await this.evaluateFlags(userContext);
+    const context = {
+      key: userContext.key,
+      anonymous: false,
+      name: userContext.name,
+      country: userContext.country,
+      state: userContext.state,
+      custom: {
+        petType: userContext.petType,
+        planType: userContext.planType,
+        paymentType: userContext.paymentType,
+      }
+    };
     // Simulate events
     const events: string[] = ['page_view'];
     if (this.shouldFireEvent('trial_signup', userContext.country!, flagValues)) {
       events.push('trial_signup');
+      this.ldClient.track('trial_signup', context);
       // Simulate trial to paid conversion
       if (this.shouldFireEvent('trial_to_paid_conversion', userContext.country!, flagValues)) {
         events.push('trial_to_paid_conversion');
+        this.ldClient.track('trial_to_paid_conversion', context);
         events.push('total_revenue');
+        this.ldClient.track('total_revenue', context);
       }
     }
     if (flagValues.seasonalBanner && this.shouldFireEvent('banner_click', userContext.country!, flagValues)) {
       events.push('banner_click');
+      this.ldClient.track('banner_click', context);
     }
     if (this.shouldFireEvent('hero_engagement', userContext.country!, flagValues)) {
       events.push('hero_engagement');
+      this.ldClient.track('hero_engagement', context);
     }
     return { userContext, flagValues, events };
   }
