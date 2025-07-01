@@ -67,8 +67,9 @@ export class SimulationService {
     else if (country === 'FR') state = faker.helpers.arrayElement(['Paris', 'Bouches-du-Rhône', 'Nord', 'Rhône', 'Haute-Garonne']);
     else if (country === 'DE') state = faker.helpers.arrayElement(['Berlin', 'Bavaria', 'North Rhine-Westphalia', 'Baden-Württemberg', 'Hesse']);
     else if (country === 'UK') state = faker.helpers.arrayElement(['Greater London', 'West Midlands', 'Greater Manchester', 'West Yorkshire', 'Kent']);
+
     return {
-      key: faker.internet.username() + '-' + faker.string.uuid(),
+      key: faker.string.uuid(), // Always unique and random
       anonymous: false,
       name: faker.person.fullName(),
       country,
