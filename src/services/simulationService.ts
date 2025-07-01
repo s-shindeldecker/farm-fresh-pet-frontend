@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import type { UserProfile } from '../context/UserContext';
 import config from '../config/simulation.json';
-import { v4 as uuidv4 } from 'uuid';
 
 // Type definitions
 interface SimulationConfig {
@@ -34,30 +33,6 @@ interface SimulationConfig {
 }
 
 const defaultConfig: SimulationConfig = config as SimulationConfig;
-
-// Helper to create and cache a Snowflake connection
-let snowflakeConnection: any = null;
-function getSnowflakeConnection() {
-  if (snowflakeConnection) return snowflakeConnection;
-  const privateKey = process.env.SNOWFLAKE_PRIVATE_KEY;
-  if (!privateKey) throw new Error('SNOWFLAKE_PRIVATE_KEY is not set');
-  snowflakeConnection = snowflake.createConnection({
-    account: process.env.SNOWFLAKE_ACCOUNT,
-    username: process.env.SNOWFLAKE_USER,
-    privateKey: privateKey,
-    warehouse: process.env.SNOWFLAKE_WAREHOUSE,
-    database: process.env.SNOWFLAKE_DATABASE,
-    schema: process.env.SNOWFLAKE_SCHEMA,
-    role: process.env.SNOWFLAKE_ROLE,
-    authenticator: 'SNOWFLAKE_JWT',
-  });
-  snowflakeConnection.connect((err) => {
-    if (err) {
-      console.error('Failed to connect to Snowflake:', err);
-    }
-  });
-  return snowflakeConnection;
-}
 
 async function insertEventToSnowflake(eventName: string, context: any) {
   // Call backend API route instead of using snowflake-sdk directly
