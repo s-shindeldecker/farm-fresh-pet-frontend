@@ -1,10 +1,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { v4 as uuidv4 } from 'uuid';
 
-// Import snowflake-sdk using dynamic import to handle CommonJS module
-const snowflake = await import('snowflake-sdk');
-
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const snowflake = await import('snowflake-sdk');
+
   console.log('[API] Received request:', { method: req.method, body: req.body });
 
   if (req.method !== 'POST') {
