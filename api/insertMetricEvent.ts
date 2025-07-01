@@ -1,6 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import snowflake from 'snowflake-sdk';
 import { v4 as uuidv4 } from 'uuid';
+
+// Import snowflake-sdk using dynamic import to handle CommonJS module
+const snowflake = await import('snowflake-sdk');
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log('[API] Received request:', { method: req.method, body: req.body });
@@ -16,14 +18,50 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Missing eventName or context.key' });
   }
 
-  // Prepare Snowflake connection
-  const privateKey = process.env.SNOWFLAKE_PRIVATE_KEY;
-  if (!privateKey) {
-    console.error('[API] SNOWFLAKE_PRIVATE_KEY is not set');
-    return res.status(500).json({ error: 'SNOWFLAKE_PRIVATE_KEY is not set' });
+  // Validate all required environment variables
+  const requiredEnvVars = {
+    SNOWFLAKE_ACCOUNT: process.env.SNOWFLAKE_ACCOUNT,
+    SNOWFLAKE_USER: process.env.SNOWFLAKE_USER,
+    SNOWFLAKE_PRIVATE_KEY: process.env.SNOWFLAKE_PRIVATE_KEY,
+    SNOWFLAKE_WAREHOUSE: process.env.SNOWFLAKE_WAREHOUSE,
+    SNOWFLAKE_DATABASE: process.env.SNOWFLAKE_DATABASE,
+    SNOWFLAKE_SCHEMA: process.env.SNOWFLAKE_SCHEMA,
+    SNOWFLAKE_ROLE: process.env.SNOWFLAKE_ROLE,
+  };
+
+  console.log('[API] Environment variables check:', {
+    SNOWFLAKE_ACCOUNT: requiredEnvVars.SNOWFLAKE_ACCOUNT ? 'SET' : 'MISSING',
+    SNOWFLAKE_USER: requiredEnvVars.SNOWFLAKE_USER ? 'SET' : 'MISSING',
+    SNOWFLAKE_PRIVATE_KEY: requiredEnvVars.SNOWFLAKE_PRIVATE_KEY ? 'SET' : 'MISSING',
+    SNOWFLAKE_WAREHOUSE: requiredEnvVars.SNOWFLAKE_WAREHOUSE ? 'SET' : 'MISSING',
+    SNOWFLAKE_DATABASE: requiredEnvVars.SNOWFLAKE_DATABASE ? 'SET' : 'MISSING',
+    SNOWFLAKE_SCHEMA: requiredEnvVars.SNOWFLAKE_SCHEMA ? 'SET' : 'MISSING',
+    SNOWFLAKE_ROLE: requiredEnvVars.SNOWFLAKE_ROLE ? 'SET' : 'MISSING',
+  });
+
+  // Check for missing environment variables
+  const missingVars = Object.entries(requiredEnvVars)
+    .filter(([key, value]) => !value)
+    .map(([key]) => key);
+
+  if (missingVars.length > 0) {
+    console.error('[API] Missing environment variables:', missingVars);
+    return res.status(500).json({ 
+      error: 'Missing environment variables', 
+      missing: missingVars 
+    });
   }
 
-  const connection = snowflake.createConnection({
+  // Validate private key format
+  const privateKey = process.env.SNOWFLAKE_PRIVATE_KEY;
+  if (!privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
+    console.error('[API] SNOWFLAKE_PRIVATE_KEY format appears incorrect');
+    return res.status(500).json({ error: 'SNOWFLAKE_PRIVATE_KEY format appears incorrect' });
+  }
+
+  console.log('[API] All environment variables validated successfully');
+
+  const connection = snowflake.default.createConnection({
     account: process.env.SNOWFLAKE_ACCOUNT,
     username: process.env.SNOWFLAKE_USER,
     privateKey: privateKey,
