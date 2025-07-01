@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { UserProfile } from '../context/UserContext';
 import config from '../config/simulation.json';
+import { v4 as uuidv4 } from 'uuid';
 
 // Type definitions
 interface SimulationConfig {
@@ -33,6 +34,39 @@ interface SimulationConfig {
 }
 
 const defaultConfig: SimulationConfig = config as SimulationConfig;
+
+// Helper to create and cache a Snowflake connection
+let snowflakeConnection: any = null;
+function getSnowflakeConnection() {
+  if (snowflakeConnection) return snowflakeConnection;
+  const privateKey = process.env.SNOWFLAKE_PRIVATE_KEY;
+  if (!privateKey) throw new Error('SNOWFLAKE_PRIVATE_KEY is not set');
+  snowflakeConnection = snowflake.createConnection({
+    account: process.env.SNOWFLAKE_ACCOUNT,
+    username: process.env.SNOWFLAKE_USER,
+    privateKey: privateKey,
+    warehouse: process.env.SNOWFLAKE_WAREHOUSE,
+    database: process.env.SNOWFLAKE_DATABASE,
+    schema: process.env.SNOWFLAKE_SCHEMA,
+    role: process.env.SNOWFLAKE_ROLE,
+    authenticator: 'SNOWFLAKE_JWT',
+  });
+  snowflakeConnection.connect((err) => {
+    if (err) {
+      console.error('Failed to connect to Snowflake:', err);
+    }
+  });
+  return snowflakeConnection;
+}
+
+async function insertEventToSnowflake(eventName: string, context: any) {
+  // Call backend API route instead of using snowflake-sdk directly
+  await fetch('/api/insertMetricEvent', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ eventName, context })
+  });
+}
 
 export class SimulationService {
   private config: SimulationConfig;
@@ -130,26 +164,53 @@ export class SimulationService {
         paymentType: userContext.paymentType,
       }
     };
+    // Get outcome-location flag
+    const outcomeLocation = await this.ldClient.variation('outcome-location', 'LD', context);
+    console.log('[Simulation] Outcome location flag value:', outcomeLocation, 'for user:', userContext.key);
     // Simulate events
     const events: string[] = ['page_view'];
     if (this.shouldFireEvent('trial_signup', userContext.country!, flagValues)) {
       events.push('trial_signup');
-      this.ldClient.track('trial_signup', context);
-      // Simulate trial to paid conversion
+      if (outcomeLocation === 'LD') {
+        console.log('[Simulation] Sending trial_signup to LaunchDarkly for user:', userContext.key);
+        this.ldClient.track('trial_signup', context);
+      } else if (outcomeLocation === 'Snowflake') {
+        await insertEventToSnowflake('trial_signup', context);
+      }
       if (this.shouldFireEvent('trial_to_paid_conversion', userContext.country!, flagValues)) {
         events.push('trial_to_paid_conversion');
-        this.ldClient.track('trial_to_paid_conversion', context);
+        if (outcomeLocation === 'LD') {
+          console.log('[Simulation] Sending trial_to_paid_conversion to LaunchDarkly for user:', userContext.key);
+          this.ldClient.track('trial_to_paid_conversion', context);
+        } else if (outcomeLocation === 'Snowflake') {
+          await insertEventToSnowflake('trial_to_paid_conversion', context);
+        }
         events.push('total_revenue');
-        this.ldClient.track('total_revenue', context);
+        if (outcomeLocation === 'LD') {
+          console.log('[Simulation] Sending total_revenue to LaunchDarkly for user:', userContext.key);
+          this.ldClient.track('total_revenue', context);
+        } else if (outcomeLocation === 'Snowflake') {
+          await insertEventToSnowflake('total_revenue', context);
+        }
       }
     }
     if (flagValues.seasonalBanner && this.shouldFireEvent('banner_click', userContext.country!, flagValues)) {
       events.push('banner_click');
-      this.ldClient.track('banner_click', context);
+      if (outcomeLocation === 'LD') {
+        console.log('[Simulation] Sending banner_click to LaunchDarkly for user:', userContext.key);
+        this.ldClient.track('banner_click', context);
+      } else if (outcomeLocation === 'Snowflake') {
+        await insertEventToSnowflake('banner_click', context);
+      }
     }
     if (this.shouldFireEvent('hero_engagement', userContext.country!, flagValues)) {
       events.push('hero_engagement');
-      this.ldClient.track('hero_engagement', context);
+      if (outcomeLocation === 'LD') {
+        console.log('[Simulation] Sending hero_engagement to LaunchDarkly for user:', userContext.key);
+        this.ldClient.track('hero_engagement', context);
+      } else if (outcomeLocation === 'Snowflake') {
+        await insertEventToSnowflake('hero_engagement', context);
+      }
     }
     return { userContext, flagValues, events };
   }
