@@ -26,7 +26,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const getRandomUserProfile = (): UserProfile => {
   const country = faker.helpers.arrayElement(['US', 'CA', 'FR', 'UK']);
-  const petType = faker.helpers.arrayElement(['dog', 'cat', 'bird', 'reptile']);
+  const petType = faker.helpers.arrayElement(['dog', 'cat', 'both']);
   const planType = faker.helpers.arrayElement(['basic', 'premium', 'deluxe']);
   const paymentType = faker.helpers.arrayElement(['credit_card', 'paypal', 'apple_pay']);
   let state = '';
