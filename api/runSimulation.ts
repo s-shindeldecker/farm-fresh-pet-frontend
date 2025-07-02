@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import * as LaunchDarkly from 'launchdarkly-node-server-sdk';
 import { faker } from '@faker-js/faker';
 
 const LD_SDK_KEY = process.env.LAUNCHDARKLY_SDK_KEY!;
@@ -29,24 +28,28 @@ function generateRandomUserContext() {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const { numUsers = 10 } = req.body || {};
+  try {
+    // Dynamically import the CommonJS SDK inside the handler
+    const LaunchDarkly = await import('launchdarkly-node-server-sdk');
+    const { numUsers = 10 } = req.body || {};
 
-  const ldClient = LaunchDarkly.init(LD_SDK_KEY);
-  await ldClient.waitForInitialization();
+    const ldClient = LaunchDarkly.init(LD_SDK_KEY);
+    await ldClient.waitForInitialization();
 
-  const results: any[] = [];
+    const results: any[] = [];
 
-  for (let i = 0; i < numUsers; i++) {
-    const user = generateRandomUserContext();
-    // Evaluate flags
-    const trialDays = await ldClient.variation('number-of-days-trial', user, 7);
-    // Track events
-    ldClient.track('trial_signup', user, { trialDays });
-    results.push({ user, trialDays });
+    for (let i = 0; i < numUsers; i++) {
+      const user = generateRandomUserContext();
+      const trialDays = await ldClient.variation('number-of-days-trial', user, 7);
+      ldClient.track('trial_signup', user, { trialDays });
+      results.push({ user, trialDays });
+    }
+
+    await ldClient.flush();
+    await ldClient.close();
+
+    res.status(200).json({ success: true, results });
+  } catch (error: any) {
+    res.status(500).json({ success: false, error: error.message || String(error) });
   }
-
-  await ldClient.flush();
-  await ldClient.close();
-
-  res.status(200).json({ success: true, results });
 } 
