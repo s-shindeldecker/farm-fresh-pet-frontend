@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { LDContextProvider } from './context/LDContext';
 import { UserProvider, useUser } from './context/UserContext';
 import type { UserProfile } from './context/UserContext';
@@ -8,7 +8,7 @@ import { Footer } from './components/Layout/Footer';
 import { SeasonalBanner } from './components/Layout/SeasonalBanner';
 import { Account } from './pages/Account';
 import styled from '@emotion/styled';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Modal } from './components/common/Modal';
 import AboutUs from './pages/About';
 import WhyGravityFarms from './pages/WhyGravityFarms';
