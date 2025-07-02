@@ -98,6 +98,8 @@ export const DeveloperTools = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState<SimulationProgress | null>(null);
   const [results, setResults] = useState<SimulationResults | null>(null);
+  const [simStatus, setSimStatus] = useState<string>('');
+  const [simResults, setSimResults] = useState<any>(null);
 
   useEffect(() => {
     if (ldClient) {
@@ -123,6 +125,27 @@ export const DeveloperTools = () => {
     if (!simulationService) return;
     simulationService.stopSimulation();
     setIsRunning(false);
+  };
+
+  const runBackendSimulation = async () => {
+    setSimStatus('Running simulation...');
+    setSimResults(null);
+    try {
+      const res = await fetch('/api/runSimulation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ numUsers: 10 }) // You can make this configurable
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSimStatus('Simulation complete!');
+        setSimResults(data.results);
+      } else {
+        setSimStatus('Simulation failed.');
+      }
+    } catch (err) {
+      setSimStatus('Simulation error: ' + err);
+    }
   };
 
   return (
@@ -191,6 +214,17 @@ export const DeveloperTools = () => {
           </ResultsGrid>
         </Card>
       )}
+      <Card>
+        <Title>Backend Simulation</Title>
+        <Button variant="primary" onClick={runBackendSimulation}>Run Backend Simulation</Button>
+        <Status>{simStatus}</Status>
+        {simResults && (
+          <ResultsCard>
+            <ResultsTitle>Results</ResultsTitle>
+            <pre style={{ maxHeight: 300, overflow: 'auto' }}>{JSON.stringify(simResults, null, 2)}</pre>
+          </ResultsCard>
+        )}
+      </Card>
     </Container>
   );
 }; 
